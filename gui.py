@@ -322,7 +322,16 @@ class ChessGUI:
         black_btn = pygame.Rect(self.WIDTH//2 + 10, self.HEIGHT//2 + 50, 100, 40)
         start_btn = pygame.Rect(self.WIDTH//2 - 50, self.HEIGHT//2 + 110, 100, 40)
         
+        # Cursor blinking variables
+        cursor_visible = True
+        last_blink_time = time.time()
+        
         while not done:
+            # Cursor blink logic
+            if time.time() - last_blink_time > 0.5:
+                cursor_visible = not cursor_visible
+                last_blink_time = time.time()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: pygame.quit(); sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -358,6 +367,14 @@ class ChessGUI:
             input_box.w = max(200, txt_surf.get_width()+10)
             input_box.centerx = self.WIDTH // 2
             self.screen.blit(txt_surf, (input_box.x+5, input_box.y+5))
+            
+            # Draw cursor
+            if active and cursor_visible:
+                cursor_x = input_box.x + 5 + txt_surf.get_width()
+                cursor_y = input_box.y + 5
+                cursor_h = txt_surf.get_height()
+                pygame.draw.line(self.screen, color, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_h), 2)
+
             pygame.draw.rect(self.screen, color, input_box, 2)
             
             c_white = (100, 200, 100) if selected_color == chess.WHITE else (100, 100, 100)
